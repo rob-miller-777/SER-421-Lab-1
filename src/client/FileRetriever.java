@@ -17,24 +17,34 @@ public class FileRetriever {
         this.fileName = fileName;
     }
 
-    public void retrieve() throws Exception{
+    public void retrieve() {
+        try{
+            URL url = new URL("http", server, port, "/" + fileName);
+            System.out.println("Establishing connection to " + server + ":" + port + "/" + fileName);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            if(connection.getResponseCode() != 200){
+                System.exit(1);
+            }else System.out.println("Connection Established");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            String directory = new File(".").getCanonicalPath();
+            File file = new File(directory + "/resources/xmlfiles/" + fileName);
+            FileOutputStream fos = new FileOutputStream(file);
+            PrintStream stdout = System.out;
+            PrintStream ps = new PrintStream(fos);
+            System.out.println("Transfering Data...");
+            System.setOut(ps);
+            while((inputLine = in.readLine()) != null)
+                System.out.println(inputLine);
+            in.close();
+            System.setOut(stdout);
+            System.out.println("Connection Closed");
 
-        URL url = new URL("http", server, port, "/" + fileName);
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-        System.out.println(connection.getResponseMessage());
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-
-        File file = new File(fileName);
-        FileOutputStream fos = new FileOutputStream(file);
-        PrintStream ps = new PrintStream(fos);
-        System.setOut(ps);
-
-        while((inputLine = in.readLine()) != null)
-            System.out.println(inputLine);
-        in.close();
-
-
+        } catch(MalformedURLException e){
+            System.err.println("MalformedURLException: " + e.getMessage());
+        } catch(IOException e){
+            System.err.println("IOException: " + e.getMessage());
+        }
     }
 
 }

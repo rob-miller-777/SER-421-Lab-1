@@ -17,13 +17,15 @@ import java.io.PrintStream;
 public class Transformer{
 
     public void transform(String fileName) throws Exception{
-        File xmlFile = new File(fileName);
+        String directory = new File(".").getCanonicalPath();
+        File xmlFile = new File(directory + "/resources/xmlfiles/" + fileName);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document document = dBuilder.parse(xmlFile);
         document.getDocumentElement().normalize();
 
-        File file = new File("test.html");
+        fileName = fileName.substring(0, fileName.indexOf('.'));
+        File file = new File(directory + "/resources/htmlfiles/" + fileName + ".html");
         FileOutputStream fos = new FileOutputStream(file);
         PrintStream ps = new PrintStream(fos);
         System.setOut(ps);
